@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 
 from self_loop_eval.models.base import LLMResponse
 
@@ -24,7 +24,7 @@ class RoundState:
     env_feedback: str = ""
     teacher_eval: LLMResponse | None = None
     teacher_thought: LLMResponse | None = None
-    timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    timestamp: str = field(default_factory=lambda: datetime.now(tz=timezone.utc).isoformat())
 
     def to_dict(self) -> dict:
         """Serialize the round state to a dictionary."""
@@ -58,7 +58,7 @@ class LoopResult:
     final_env_score: float = 0.0
     improvement: float = 0.0
     ground_truth: str | None = None
-    started_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    started_at: str = field(default_factory=lambda: datetime.now(tz=timezone.utc).isoformat())
     completed_at: str | None = None
 
     @property

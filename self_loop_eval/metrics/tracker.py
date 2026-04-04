@@ -4,8 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
-from collections import defaultdict
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 from self_loop_eval.config import MetricsConfig
@@ -40,7 +39,7 @@ class MetricsTracker:
         Returns:
             Summary dict with computed metrics.
         """
-        timestamp = datetime.utcnow().isoformat()
+        timestamp = datetime.now(tz=timezone.utc).isoformat()
 
         cycle_metrics = {
             "timestamp": timestamp,

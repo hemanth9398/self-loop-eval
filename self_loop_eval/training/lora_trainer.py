@@ -42,7 +42,6 @@ class LoRATrainer:
             ImportError: If training dependencies are not installed.
         """
         try:
-            from datasets import Dataset
             from peft import LoraConfig, TaskType, get_peft_model
             from transformers import (
                 AutoModelForCausalLM,
@@ -121,7 +120,7 @@ class LoRATrainer:
         logger.info("LoRA adapter saved to %s", adapter_path)
         return adapter_path
 
-    def _prepare_dataset(self, sft_data: list[dict], tokenizer) -> "Dataset":
+    def _prepare_dataset(self, sft_data: list[dict], tokenizer):
         """Prepare a HuggingFace Dataset from SFT pairs."""
         from datasets import Dataset
 

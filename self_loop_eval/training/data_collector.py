@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 from self_loop_eval.config import TrainingConfig
@@ -69,7 +69,7 @@ class TrainingDataCollector:
                 "improvement": (
                     (next_round.env_score or 0) - (current.env_score or 0)
                 ),
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(tz=timezone.utc).isoformat(),
             }
             tuples.append(entry)
 
@@ -103,7 +103,7 @@ class TrainingDataCollector:
         output_dir.mkdir(parents=True, exist_ok=True)
 
         if filename is None:
-            ts = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+            ts = datetime.now(tz=timezone.utc).strftime("%Y%m%d_%H%M%S")
             filename = f"training_data_{ts}.jsonl"
 
         output_path = output_dir / filename

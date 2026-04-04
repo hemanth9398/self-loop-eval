@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 
 from self_loop_eval.config import SystemConfig
 from self_loop_eval.environments.base import TaskEnvironment, TaskInstance
@@ -84,7 +84,7 @@ class SelfEvalLoop:
         if env_eval.passed:
             logger.info("Task solved perfectly in Round 1!")
             result.final_env_score = env_eval.score
-            result.completed_at = datetime.utcnow().isoformat()
+            result.completed_at = datetime.now(tz=timezone.utc).isoformat()
             return result
 
         # Rounds 2..N: Self-eval → self-correct loop
@@ -150,7 +150,7 @@ class SelfEvalLoop:
         # Finalize
         result.final_env_score = result.rounds[-1].env_score or 0.0
         result.compute_improvement()
-        result.completed_at = datetime.utcnow().isoformat()
+        result.completed_at = datetime.now(tz=timezone.utc).isoformat()
 
         logger.info(
             "Loop complete: %d rounds, improvement=%.4f, teacher=%s",

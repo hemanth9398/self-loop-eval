@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 from self_loop_eval.config import SystemConfig
@@ -49,7 +49,7 @@ class TrainingScheduler:
         Returns:
             Summary dict with cycle results.
         """
-        cycle_start = datetime.utcnow()
+        cycle_start = datetime.now(tz=timezone.utc)
         logger.info("Starting training cycle at %s", cycle_start.isoformat())
 
         # Step 1: Run self-eval loop on all tasks
@@ -69,12 +69,12 @@ class TrainingScheduler:
 
         # Step 5: Save SFT data
         sft_dir = Path(self.config.training.training_data_path)
-        ts = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+        ts = datetime.now(tz=timezone.utc).strftime("%Y%m%d_%H%M%S")
         sft_path = self.sft_formatter.save_sft_data(
             sft_pairs, sft_dir / f"sft_data_{ts}.json"
         )
 
-        cycle_end = datetime.utcnow()
+        cycle_end = datetime.now(tz=timezone.utc)
 
         summary = {
             "cycle_start": cycle_start.isoformat(),
