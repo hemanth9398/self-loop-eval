@@ -366,9 +366,9 @@ class AhaMomentEngine:
         logger.info("Starting %d-cycle validation run with %d tasks", n_cycles, len(tasks))
 
         for cycle_num in range(1, n_cycles + 1):
-            logger.info("\n{'='*60}")
+            logger.info("\n%s", "=" * 60)
             logger.info("CYCLE %d / %d", cycle_num, n_cycles)
-            logger.info("{'='*60}\n")
+            logger.info("%s\n", "=" * 60)
 
             for task in tasks:
                 self.run_single_cycle(task, cycle_num)
