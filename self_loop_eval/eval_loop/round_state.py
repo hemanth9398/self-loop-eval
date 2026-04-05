@@ -45,6 +45,7 @@ class RoundState:
     @classmethod
     def from_dict(cls, data: dict) -> RoundState:
         """Deserialize a round state from a dictionary."""
+        cls._validate_required_fields(data, "round state", ["round_number", "solution"])
         return cls(
             round_number=data["round_number"],
             solution=LLMResponse(**data["solution"]),
@@ -62,6 +63,15 @@ class RoundState:
             ),
             timestamp=data.get("timestamp", ""),
         )
+
+    @staticmethod
+    def _validate_required_fields(
+        data: dict, label: str, fields: list[str]
+    ) -> None:
+        missing = [field for field in fields if field not in data]
+        if missing:
+            missing_fields = ", ".join(sorted(missing))
+            raise ValueError(f"Missing required {label} fields: {missing_fields}")
 
 
 @dataclass
@@ -125,6 +135,7 @@ class LoopResult:
     @classmethod
     def from_dict(cls, data: dict) -> LoopResult:
         """Deserialize a loop result from a dictionary."""
+        RoundState._validate_required_fields(data, "loop result", ["task_id", "task_prompt"])
         return cls(
             task_id=data["task_id"],
             task_prompt=data["task_prompt"],

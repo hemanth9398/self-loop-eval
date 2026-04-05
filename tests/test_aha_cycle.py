@@ -695,6 +695,10 @@ class TestRewardFunction:
 # ---------------------------------------------------------------------------
 
 class TestMetricsTracker:
+    def test_loop_result_from_dict_requires_core_fields(self):
+        with pytest.raises(ValueError, match="task_id"):
+            LoopResult.from_dict({"task_prompt": "solve"})
+
     def test_record_cycle_from_serialized_loop_result_preserves_metrics(self, tmp_path):
         from self_loop_eval.config import MetricsConfig
 
