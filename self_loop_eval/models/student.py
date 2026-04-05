@@ -41,6 +41,9 @@ class StudentModel(LLMWrapper):
         if not system_prompt:
             system_prompt = STUDENT_SYSTEM_PROMPT
 
+        if self.config.provider == "local":
+            return self._generate_local(prompt, system_prompt)
+
         client = self._get_client()
         response = client.chat.completions.create(
             model=self.config.model_name,
