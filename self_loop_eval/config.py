@@ -10,13 +10,15 @@ from pathlib import Path
 class ModelConfig:
     """Configuration for an LLM model (student or teacher)."""
 
-    provider: str = "openai"
-    model_name: str = "gpt-3.5-turbo"
+    provider: str = "local"
+    model_name: str = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
     api_key: str | None = None
     api_base: str | None = None
     temperature: float = 0.7
     max_tokens: int = 2048
     local_model_path: str | None = None
+    quantization: str | None = "4bit"
+    device_map: str = "auto"
 
 
 @dataclass
@@ -72,7 +74,9 @@ class SystemConfig:
     """Top-level system configuration."""
 
     student: ModelConfig = field(default_factory=ModelConfig)
-    teacher: ModelConfig = field(default_factory=lambda: ModelConfig(model_name="gpt-4"))
+    teacher: ModelConfig = field(
+        default_factory=lambda: ModelConfig(model_name="Qwen/Qwen2.5-1.5B-Instruct")
+    )
     eval_loop: EvalLoopConfig = field(default_factory=EvalLoopConfig)
     training: TrainingConfig = field(default_factory=TrainingConfig)
     rl: RLConfig = field(default_factory=RLConfig)
