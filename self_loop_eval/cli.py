@@ -122,16 +122,7 @@ def _cmd_run(config: SystemConfig, args: argparse.Namespace) -> None:
     # Record metrics
     from self_loop_eval.eval_loop.round_state import LoopResult
 
-    loop_results = []
-    for r_data in summary["results"]:
-        lr = LoopResult(
-            task_id=r_data["task_id"],
-            task_prompt=r_data["task_prompt"],
-            final_env_score=r_data["final_env_score"],
-            improvement=r_data["improvement"],
-            teacher_intervened=r_data["teacher_intervened"],
-        )
-        loop_results.append(lr)
+    loop_results = [LoopResult.from_dict(r_data) for r_data in summary["results"]]
 
     metrics_tracker.record_cycle(loop_results)
 

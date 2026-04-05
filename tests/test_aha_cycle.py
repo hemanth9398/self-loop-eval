@@ -695,6 +695,46 @@ class TestRewardFunction:
 # ---------------------------------------------------------------------------
 
 class TestMetricsTracker:
+    def test_record_cycle_from_serialized_loop_result_preserves_metrics(self, tmp_path):
+        from self_loop_eval.config import MetricsConfig
+
+        metrics_dir = str(tmp_path / "metrics_serialized")
+        tracker = MetricsTracker(MetricsConfig(metrics_dir=metrics_dir))
+
+        original = LoopResult(
+            task_id="t1",
+            task_prompt="solve",
+            converged=True,
+            teacher_intervened=True,
+            final_env_score=0.8,
+            improvement=0.3,
+            rounds=[
+                RoundState(
+                    round_number=1,
+                    solution=LLMResponse(content="v1", score=0.6),
+                    env_score=0.5,
+                    self_score=0.6,
+                ),
+                RoundState(
+                    round_number=2,
+                    solution=LLMResponse(content="v2", score=0.7),
+                    critique=LLMResponse(content="fix edge case"),
+                    env_score=0.8,
+                    self_score=0.7,
+                    teacher_eval=LLMResponse(content="better", score=0.8),
+                ),
+            ],
+        )
+
+        restored = LoopResult.from_dict(original.to_dict())
+        metrics = tracker.record_cycle([restored])
+
+        assert metrics["improvement"]["avg_final_score"] == 0.8
+        assert metrics["self_eval_accuracy"]["num_comparisons"] == 2
+        assert metrics["per_task"]["t1"]["final_score"] == 0.8
+        assert metrics["per_task"]["t1"]["num_rounds"] == 2
+        assert metrics["per_task"]["t1"]["converged"] is True
+
     def test_record_cycle(self, tmp_path):
         from self_loop_eval.config import MetricsConfig
         metrics_dir = str(tmp_path / "metrics")

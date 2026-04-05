@@ -42,6 +42,27 @@ class RoundState:
             "timestamp": self.timestamp,
         }
 
+    @classmethod
+    def from_dict(cls, data: dict) -> RoundState:
+        """Deserialize a round state from a dictionary."""
+        return cls(
+            round_number=data["round_number"],
+            solution=LLMResponse(**data["solution"]),
+            critique=LLMResponse(**data["critique"]) if data.get("critique") else None,
+            self_score=data.get("self_score"),
+            env_score=data.get("env_score"),
+            env_feedback=data.get("env_feedback", ""),
+            teacher_eval=(
+                LLMResponse(**data["teacher_eval"]) if data.get("teacher_eval") else None
+            ),
+            teacher_thought=(
+                LLMResponse(**data["teacher_thought"])
+                if data.get("teacher_thought")
+                else None
+            ),
+            timestamp=data.get("timestamp", ""),
+        )
+
 
 @dataclass
 class LoopResult:
@@ -100,3 +121,19 @@ class LoopResult:
             "started_at": self.started_at,
             "completed_at": self.completed_at,
         }
+
+    @classmethod
+    def from_dict(cls, data: dict) -> LoopResult:
+        """Deserialize a loop result from a dictionary."""
+        return cls(
+            task_id=data["task_id"],
+            task_prompt=data["task_prompt"],
+            rounds=[RoundState.from_dict(r) for r in data.get("rounds", [])],
+            converged=data.get("converged", False),
+            teacher_intervened=data.get("teacher_intervened", False),
+            final_env_score=data.get("final_env_score", 0.0),
+            improvement=data.get("improvement", 0.0),
+            ground_truth=data.get("ground_truth"),
+            started_at=data.get("started_at", ""),
+            completed_at=data.get("completed_at"),
+        )
